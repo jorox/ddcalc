@@ -1,0 +1,6 @@
+#include "xmltools.h"
+#include "tinyxml2/tinyxml2.h"
+
+namespace xmltools{
+
+  void write_to_xml( const std::vector<Segment*>& graph){

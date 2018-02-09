@@ -1,0 +1,6 @@
+#include "segment.h"
+#include <vector>
+
+namespace xmltools{
+
+  void write_to_xml( std::vect

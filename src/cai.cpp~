@@ -1,0 +1,113 @@
+#include "cai.h"
+#include "segment.h"
+#include "Eigen/Dense"
+#include "Eigen/Geometry"
+
+namespace cai{
+
+  namespace{
+    double special_func(double mu, double nu, double cw,
+                               Eigen::Vector3d R,
+                               Eigen::Vector3d t1,
+                               Eigen::Vector3d t2,
+                               Eigen::Vector3d b1,
+                               Eigen::Vector3d b2){
+      double b1b2 = b1.dot(b2);
+      double t1t2 = t1.dot(t2);
+      double b1t1 = b1.dot(t1);
+      double b2t2 = b2.dot(t2);
+      double b1t2 = b1.dot(t2);
+      double b2t1 = b2.dot(t1);
+
+      Eigen::Vector3d u = t1.cross(t2);
+      Eigen::Vector3d v = u.cross(t1);
+      Eigen::Vector3d vp = t2.cross(u);
+      double Ra = sqrt(R.squaredNorm() + cw * cw);
+      double W0 = mu / 4. / M_PI / (1 - nu) / u.dot(u);
+
+      double uu = u.dot(u);
+      double Ru = R.dot(u);
+      double Rv = R.dot(v);
+      double Rvp = R.dot(vp);
+      double Rt1 = R.dot(t1);
+      double Rt2 = R.dot(t2);
+
+      double A1 = ( (1-nu) * b1t1 * b2t2 + 2. * nu * b2t1 * b1t2 );
+      double A2 = ( b1b2 + b1t1 * b2t2 ) * t1t2;
+      double A2p= ( b1b2 + b1t2 * b2t1 ) * t1t2;
+      double A3p= ( (b1.dot(u) * b2.dot(vp) + b2.dot(u) * b1.dot(vp)) *
+                    t1t2 / uu );
+      double A3 = ( (b1.dot(u) * b2.dot(v) + b2.dot(u) * b1.dot(v)) *
+                    t1t2 / uu );
+      double A4 = ( b1t1 * b2.dot(v) + b1t2 * b2.dot(vp) ) * t1t2;
+      double A5 =  b1.cross(u).dot( b2.cross(u) ) * 2.0 * t1t2 / uu;
+
+      double res = 0;
+      res +=  (A1 - A2p) * Rvp * log(Ra + Rt2);
+      res += A3p * Ru * log(Ra + Rt2);
+      res += (A1 - A2) * Rv * log(Ra + Rt1);
+      res += A3 * Ru * log(Ra + Rt1);
+      res += A4 * Ra;
+      res += ( (A1 - A5) * (2.0 * Ru*Ru + uu * cw*cw) /
+               sqrt(uu * cw*cw + Ru*Ru) *
+               atan( ((1. + t1t2) * Ra + R.dot(t1+t2))/
+                     sqrt(uu * cw*cw + Ru*Ru) )
+               );
+
+      return res * W0;
+    }
+  }
+
+  double self_energy(double mu, double nu, double cw,
+                     const Segment& neo){
+    double L = neo.length();
+    Eigen::Vector3d burg, t;
+    neo.get_burgers_vector(burg);
+    neo.get_unit_vector(t);
+
+    double bDotB = burg.dot(burg);
+    double bDotT = burg.dot(t);
+    double La = sqrt(L * L + cw * cw);
+
+    double wSelf  = (bDotB - nu * bDotT * bDotT) * L * log( (La + L)/cw );
+    wSelf -= (3-nu) / 2.0 * bDotT * bDotT * (La - cw);
+
+    wSelf *= mu / 4.0 / M_PI / (1-nu);
+    return wSelf;
+  }
+
+  double interaction_energy(double mu, double nu, double cw,
+                            const Segment& neo,
+                            const Segment& other){
+    Eigen::Vector3d t1, t2, b1, b2, p1, p2, p3, p4;
+    Eigen::Vector3d R24, R14, R13, R23;
+    double L24, L14, L13, L23;
+
+    neo.get_unit_vector(t1);
+    other.get_unit_vector(t2);
+    neo.get_burgers_vector(b1);
+    other.get_burgers_vector(b2);
+    neo.get_head(p1);
+    neo.get_tail(p2);
+    other.get_head(p3);
+    other.get_tail(p4);
+
+    R24 = p4 - p2;
+    L24 = R24.norm();
+    R13 = p3 - p1;
+    L13 = R13.norm();
+    R14 = p4 - p1;
+    L14 = R14.norm();
+    R23 = p3 - p2;
+    L23 = R23.norm();
+
+    double wInt=0;
+    wInt += special_func(mu, nu, cw, R24, t1, t2, b1, b2);
+    wInt += special_func(mu, nu, cw, R13, t1, t2, b1, b2);
+    wInt -= special_func(mu, nu, cw, R14, t1, t2, b1, b2);
+    wInt -= special_func(mu, nu, cw, R23, t1, t2, b1, b2);
+
+    return wInt;
+  }
+
+};

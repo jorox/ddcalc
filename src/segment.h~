@@ -1,0 +1,27 @@
+#ifndef SEGMENT_H
+#define SEGMENT_H
+
+#include "Eigen/Dense"
+
+class Segment{
+
+ public:
+  Segment (Eigen::Vector3d& p1, Eigen::Vector3d& p2, Eigen::Vector3d& brg);
+  Segment (Eigen::Vector3d p1, Eigen::Vector3d p2, Eigen::Vector3d brg);
+  ~Segment();
+
+  double length() const;
+  void get_unit_vector(Eigen::Vector3d& ) const;
+  void get_burgers_vector(Eigen::Vector3d& ) const;
+  void get_head(Eigen::Vector3d& ) const;
+  void get_tail(Eigen::Vector3d& ) const;
+
+ private:
+  Eigen::Vector3d _x1;
+  Eigen::Vector3d _x2;
+  Eigen::Vector3d _burgers;
+  Eigen::Vector3d _unitVector;
+  Eigen::Vector3d _lineVector;
+};
+
+#endif
