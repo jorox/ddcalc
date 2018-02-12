@@ -11,14 +11,13 @@ class HelicalTurn
  public:
   HelicalTurn (double lmin, double totalLength, double height, double width, double burgers);
   //~HelicalTurn();
-  void regenerate (double prismaticLength, double inclination);
-  double return_inclination_angle() const;
-  void get_segments( const std::vector<Segment>& ) const;
+  void regenerate (double prismaticLength, double inclination, int image);
+  void get_segments( std::vector<Segment>& ) const;
+  double calculate_minimum_angle(double prismaticLength) const;
   void write_to_file(FILE * pf) const;
 
  private:
   double _angle;
-  double _pLength;
   double _totalLength;
   double _height;
   double _width;

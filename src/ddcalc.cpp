@@ -4,6 +4,8 @@
 #include "Eigen/Dense"
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
+#include <string>
 
 double lerp(double a, double b, double f)
 {
@@ -12,18 +14,18 @@ double lerp(double a, double b, double f)
 
 int main( int argc, char** argv){
 
-  double mu, lambda, nu, cw, gamma, _ALAT_, _MPANM2J_;
+  //double mu, lambda, nu, cw, gamma, _ALAT_, _MPANM2J_;
 
-  _ALAT_ = 0.323; //nm
-  _MPANM2J_ = 1e-21; // MJ/m^3 * nm^3 = 10^6 * 10^-27
+  //_ALAT_ = 0.323; //nm
+  //_MPANM2J_ = 1e-21; // MJ/m^3 * nm^3 = 10^6 * 10^-27
 
-  mu = 36000; //MPa
-  lambda = 33800; //MPa
-  nu = lambda / 2. / (lambda + mu);
-  cw = 0.20; //nm
-  gamma = 0.135; // J/m^2
+  //mu = 36000; //MPa
+  //lambda = 33800; //MPa
+  //nu = lambda / 2. / (lambda + mu);
+  //cw = 0.20; //nm
+  //gamma = 0.135; // J/m^2
 
-  double N = 100;
+  //double N = 100;
   /**
   double maxSep = 5.0; //nm
   double minSep = 0.2; //nm
@@ -63,19 +65,53 @@ int main( int argc, char** argv){
   return 0;
   **/
 
+  double mu = 1.0;
+  double nu = 0.33333;
+  double cw = 2.0;
+
+  Cai ecalc(mu, nu, cw);
   double lmin = std::stod (argv[1]);
   double ltot = std::stod (argv[2]);
   double h = std::stod (argv[3]);
   double w = std::stod (argv[4]);
-  double ang = std::stod (argv[5]) * M_PI / 180.0;
-  printf( "DEBUB ang = %f\n", ang);
+  double maxang = std::stod (argv[5]) * M_PI / 180.;
   double plength = std::stod (argv[6]);
-  HelicalTurn hturn(lmin, ltot, h, w, 3.232);
-  hturn.regenerate(plength, ang);
-  FILE * out;
-  out  = fopen("hturn.dat", "w");
 
-  hturn.write_to_file(out);
+  HelicalTurn hturn(lmin, ltot, h, w, 3.232);
+
+  std::vector<Segment> segs;
+  double energy[2];
+
+  int N = 100;
+  double minang = hturn.calculate_minimum_angle (plength);
+  double dang = (maxang - minang) / N;
+  double ang;
+
+  FILE * eturn;
+  FILE * out;
+  eturn = fopen ( "eturn.dat", "w");
+  std::string fname;
+
+  for (int i = 0; i < N; ++i){
+    ang = minang + i * dang;
+    hturn.regenerate(plength, ang, 1);
+    hturn.get_segments(segs);
+    ecalc.calculate_total_energy(segs, energy);
+
+    printf ( "angle = %f, self-energy = %e, inter-energy = %e\n",
+             ang / M_PI * 180., energy[0] / ltot,  energy[1] / ltot);
+
+    fprintf ( eturn, "%f %e %e %e\n", ang / M_PI * 180.,
+              energy[0] / ltot,  energy[1] / ltot,
+              (energy[0] + energy[1]) / ltot);
+
+    fname = std::string("hturn") + std::to_string(i) + std::string(".dat");
+    out  = fopen(fname.c_str(), "w");
+
+    hturn.write_to_file(out);
+    fclose(out);
+  }
+  fclose( eturn );
 
 
 }
