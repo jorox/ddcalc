@@ -20,6 +20,10 @@ HelicalTurn::HelicalTurn( double lmin,
   this->_burgers = b * Eigen::Vector3d(1.0,0.0,0.0);
 
   this->regenerate(this->_totalLength / 2.0, M_PI / 2.0, 0);
+  FILE * fout;
+  fout = fopen("construct.dat","w");
+  this->write_to_file(fout);
+  fclose(fout);
 }
 
 void HelicalTurn::subdivide(const Segment &s1)
@@ -81,7 +85,7 @@ void HelicalTurn::regenerate(double pLength,
 
   // generate first prismatic segment
   int nMainNodes = 8 + 7 * 2 * image;
-  Eigen::Matrix<double, 3, 8> x;
+  Eigen::Matrix<double, 3, Eigen::Dynamic> x(3, nMainNodes);
   Eigen::Matrix<double, 3, 1> pbcShift;
   int ix = 0;
 
@@ -90,25 +94,25 @@ void HelicalTurn::regenerate(double pLength,
     pbcShift << double(ipbc) * this->_totalLength, 0.0, 0.0;
 
     x.block<3,1>(0,ix) << -this->_totalLength / 2.0 , -this->_width, 0.0;
-    x.block<3,1>(0,ix+1) << x.block<3,1>(0,0) + Eigen::Vector3d(pLength/2.0, 0.0, 0.0);
-    x.block<3,1>(0,ix+2) << x.block<3,1>(0,1) + Eigen::Vector3d(ho2otn, 0.0, -ho2);
-    x.block<3,1>(0,ix+3) << x.block<3,1>(0,2) + Eigen::Vector3d(lmini, this->_width, 0.0);
-    x.block<3,1>(0,ix+4) << x.block<3,1>(0,3) + Eigen::Vector3d(2.0 * ho2otn, 0.0, 2.0 * ho2);
-    x.block<3,1>(0,ix+5) << x.block<3,1>(0,4) + Eigen::Vector3d(lmini, -this->_width, 0.0);
-    x.block<3,1>(0,ix+6) << x.block<3,1>(0,5) + Eigen::Vector3d(ho2otn, 0.0, -ho2);
-    x.block<3,1>(0,ix+7) << x.block<3,1>(0,6) + Eigen::Vector3d(pLength/2.0, 0.0, 0.0);
-  //x.block<3,1>(0,ix+7) << Eigen::Vector3d(this->_totalLength / 2.0 , -this->_width, 0.0);
+    x.block<3,1>(0,ix+1) << x.block<3,1>(0,ix) + Eigen::Vector3d(pLength/2.0, 0.0, 0.0);
+    x.block<3,1>(0,ix+2) << x.block<3,1>(0,ix+1) + Eigen::Vector3d(ho2otn, 0.0, -ho2);
+    x.block<3,1>(0,ix+3) << x.block<3,1>(0,ix+2) + Eigen::Vector3d(lmini, this->_width, 0.0);
+    x.block<3,1>(0,ix+4) << x.block<3,1>(0,ix+3) + Eigen::Vector3d(2.0 * ho2otn, 0.0, 2.0 * ho2);
+    x.block<3,1>(0,ix+5) << x.block<3,1>(0,ix+4) + Eigen::Vector3d(lmini, -this->_width, 0.0);
+    x.block<3,1>(0,ix+6) << x.block<3,1>(0,ix+5) + Eigen::Vector3d(ho2otn, 0.0, -ho2);
+    x.block<3,1>(0,ix+7) << x.block<3,1>(0,ix+6) + Eigen::Vector3d(pLength/2.0-this->_dx, 0.0, 0.0);
+    //x.block<3,1>(0,ix+7) << Eigen::Vector3d(this->_totalLength / 2.0 , -this->_width, 0.0);
 
-    x += pbcShift.replicate(1, 8);
+    x.block<3, 8>(0, ix) += pbcShift.replicate(1, 8);
 
-    for (int i = ix; i < ix+8; ++i){
+    for (int i = ix; i < ix+7; ++i){
       Segment s(x.block<3,1>(0,i), x.block<3,1>(0,i+1), this->_burgers);
       subdivide(s);
     }
   }
+
   std::cout << "DEBUG: main nodes = " << std::endl;
   std::cout << x << std::endl;
-
 }
 
 void HelicalTurn::get_segments( std::vector<Segment> & storage) const

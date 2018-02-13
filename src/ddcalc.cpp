@@ -66,42 +66,42 @@ int main( int argc, char** argv){
   **/
 
   double mu = 1.0;
-  double nu = 0.33333;
-  double cw = 2.0;
+  double nu = 0.2421;
+  double cw = 1.4;
 
   Cai ecalc(mu, nu, cw);
   double lmin = std::stod (argv[1]);
   double ltot = std::stod (argv[2]);
   double h = std::stod (argv[3]);
   double w = std::stod (argv[4]);
-  double maxang = std::stod (argv[5]) * M_PI / 180.;
+  double ang = std::stod (argv[5]) * M_PI / 180.;
   double plength = std::stod (argv[6]);
 
-  HelicalTurn hturn(lmin, ltot, h, w, 3.232);
+  HelicalTurn hturn(lmin, ltot, h, w, 1.0);
 
   std::vector<Segment> segs;
   double energy[2];
 
   int N = 100;
   double minang = hturn.calculate_minimum_angle (plength);
-  double dang = (maxang - minang) / N;
-  double ang;
+  double dlprism = (plength) / N;
 
   FILE * eturn;
   FILE * out;
   eturn = fopen ( "eturn.dat", "w");
   std::string fname;
 
+  double lprism;
   for (int i = 0; i < N; ++i){
-    ang = minang + i * dang;
-    hturn.regenerate(plength, ang, 1);
+    lprism = i * dlprism;
+    hturn.regenerate(lprism, ang, 1);
     hturn.get_segments(segs);
     ecalc.calculate_total_energy(segs, energy);
 
-    printf ( "angle = %f, self-energy = %e, inter-energy = %e\n",
-             ang / M_PI * 180., energy[0] / ltot,  energy[1] / ltot);
+    printf ( "lprism = %f, self-energy = %e, inter-energy = %e\n",
+             lprism, energy[0],  energy[1] / ltot);
 
-    fprintf ( eturn, "%f %e %e %e\n", ang / M_PI * 180.,
+    fprintf ( eturn, "%f %e %e %e\n", lprism,
               energy[0] / ltot,  energy[1] / ltot,
               (energy[0] + energy[1]) / ltot);
 
