@@ -147,7 +147,8 @@ double Cai::interaction_energy(const Segment& neo,
   return wInt;
 }
 
-void Cai::calculate_total_energy ( const std::vector<Segment>& segs, double* energy)
+void Cai::calculate_total_energy ( const std::vector<Segment>& segs,
+                                   double* energy)
 {
   energy[0] = 0.0;
   energy[1] = 0.0;

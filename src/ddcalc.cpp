@@ -90,20 +90,22 @@ int main( int argc, char** argv){
   FILE * out;
   eturn = fopen ( "eturn.dat", "w");
   std::string fname;
+  double hturnLength;
 
   double lprism;
   for (int i = 0; i < N; ++i){
     lprism = i * dlprism;
-    hturn.regenerate(lprism, ang, 1);
+    hturn.regenerate(lprism, ang, 0);
     hturn.get_segments(segs);
     ecalc.calculate_total_energy(segs, energy);
+    hturnLength = hturn.get_total_length();
 
-    printf ( "lprism = %f, self-energy = %e, inter-energy = %e\n",
-             lprism, energy[0],  energy[1] / ltot);
+    printf ( "lprism = %f, self-energy = %e, inter-energy = %e, length = %f\n",
+             lprism, energy[0],  energy[1], hturnLength);
 
     fprintf ( eturn, "%f %e %e %e\n", lprism,
-              energy[0] / ltot,  energy[1] / ltot,
-              (energy[0] + energy[1]) / ltot);
+              energy[0] / hturnLength,  energy[1] / hturnLength,
+              (energy[0] + energy[1]) / hturnLength );
 
     fname = std::string("hturn") + std::to_string(i) + std::string(".dat");
     out  = fopen(fname.c_str(), "w");

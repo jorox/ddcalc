@@ -7,6 +7,7 @@ class Segment{
 
  public:
   Segment (const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, const Eigen::Vector3d& brg);
+  Segment (const Segment& );
   ~Segment();
 
   double length() const;
@@ -14,6 +15,7 @@ class Segment{
   void get_burgers_vector(Eigen::Vector3d& ) const;
   void get_head(Eigen::Vector3d& ) const;
   void get_tail(Eigen::Vector3d& ) const;
+  Segment& operator= (Segment const &rhs);
 
  private:
   Eigen::Vector3d _x1;

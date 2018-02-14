@@ -14,6 +14,7 @@ class HelicalTurn
   void regenerate (double prismaticLength, double inclination, int image);
   void get_segments( std::vector<Segment>& ) const;
   double calculate_minimum_angle(double prismaticLength) const;
+  double get_total_length() const;
   void write_to_file(FILE * pf) const;
 
  private:

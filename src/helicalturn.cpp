@@ -141,3 +141,12 @@ double HelicalTurn::calculate_minimum_angle(double prismaticLength) const
   double tn = 2.0 * this->_height / (this->_totalLength - prismaticLength - 2.0 * this->_dx);
   return atan (tn);
 }
+
+double HelicalTurn::get_total_length() const
+{
+  double res = 0;
+  for (int i = 0; i < _segVector.size(); ++i){
+    res += _segVector[i].length();
+  }
+  return res;
+}
