@@ -95,9 +95,9 @@ int main( int argc, char** argv){
   double lprism;
   for (int i = 0; i < N; ++i){
     lprism = i * dlprism;
-    hturn.regenerate(lprism, ang, 0);
-    hturn.get_segments(segs);
-    ecalc.calculate_total_energy(segs, energy);
+    hturn.generate(lprism, ang, 0);
+    //hturn.get_segments(segs);
+    ecalc.calculate_total_energy(hturn._segVector, energy);
     hturnLength = hturn.get_total_length();
 
     printf ( "lprism = %f, self-energy = %e, inter-energy = %e, length = %f\n",

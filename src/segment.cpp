@@ -15,22 +15,24 @@ Segment::Segment(const Eigen::Vector3d& p1,
   this->_unitVector = this->_lineVector / this->_lineVector.norm();
 }
 
+/*
 Segment& Segment::operator= (Segment const &rhs)
 {
-  _x1 << rhs._x1;
-  _x2 << rhs._x2;
-  _burgers << rhs._burgers;
+  this->_x1 << rhs._x1;
+  this->_x2 << rhs._x2;
+  this->_burgers << rhs._burgers;
 
-  _lineVector = _x2 - _x1;
-  _unitVector = _lineVector / _lineVector.norm();
+  this->_lineVector = _x2 - _x1;
+  this->_unitVector = _lineVector / _lineVector.norm();
 
   return *this;
 }
-
+*/
 Segment::Segment( const Segment& other)
 {
-  this->_x1 << other._x1;
-  this->_x2 << other._x2;
+  other.get_head(this->_x1);
+  other.get_tail(this->_x2);
+  other.get_burgers_vector(this->_burgers);
 
   this->_lineVector = (this->_x2 - this->_x1);
   this->_unitVector = this->_lineVector / this->_lineVector.norm();
