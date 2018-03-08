@@ -1,45 +1,63 @@
 <?xml version="1.0" ?>
 <root>
 	<nodes>
-		<node tag="0" pinned="0" x="-40.00000000" y="0.00000000" z="-10.00000000" />
-		<node tag="1" pinned="0" x="-34.04123204" y="5.00000000" z="-10.00000000" />
-		<node tag="2" pinned="0" x="-5.95876796" y="5.00000000" z="0.00000000" />
-		<node tag="3" pinned="0" x="5.95876796" y="-5.00000000" z="0.00000000" />
-		<node tag="4" pinned="0" x="34.04123204" y="-5.00000000" z="-10.00000000" />
-		<node tag="5" pinned="0" x="40.00000000" y="0.00000000" z="-10.00000000" />
+		<node tag="0" pinned="0" x="-40.00000000" y="-10.00000000" z="0.00000000" />
+		<node tag="1" pinned="0" x="-37.11324865" y="-10.00000000" z="5.00000000" />
+		<node tag="2" pinned="0" x="-2.88675135" y="0.00000000" z="5.00000000" />
+		<node tag="3" pinned="0" x="2.88675135" y="0.00000000" z="-5.00000000" />
+		<node tag="4" pinned="0" x="37.11324865" y="-10.00000000" z="-5.00000000" />
+		<node tag="5" pinned="0" x="40.00000000" y="-10.00000000" z="0.00000000" />
 	</nodes>
 	<lines>
 		<line tag="0" bh="2" bk="2" bi="-4" bl="0">
+			<constraints>
+				<plane h="-1" k="1" i="0" l="0" />
+			</constraints>
 			<nodes>
 				<node tag="5" />
 				<node tag="0" />
 			</nodes>
 		</line>
 		<line tag="1" bh="2" bk="2" bi="-4" bl="0">
+			<constraints>
+				<plane h="0" k="0" i="0" l="1" />
+			</constraints>
 			<nodes>
 				<node tag="0" />
 				<node tag="1" />
 			</nodes>
 		</line>
 		<line tag="2" bh="2" bk="2" bi="-4" bl="0">
+			<constraints>
+				<plane h="-1" k="1" i="0" l="0" />
+			</constraints>
 			<nodes>
 				<node tag="1" />
 				<node tag="2" />
 			</nodes>
 		</line>
 		<line tag="3" bh="2" bk="2" bi="-4" bl="0">
+			<constraints>
+				<plane h="0" k="0" i="0" l="1" />
+			</constraints>
 			<nodes>
 				<node tag="2" />
 				<node tag="3" />
 			</nodes>
 		</line>
 		<line tag="4" bh="2" bk="2" bi="-4" bl="0">
+			<constraints>
+				<plane h="-1" k="1" i="0" l="0" />
+			</constraints>
 			<nodes>
 				<node tag="3" />
 				<node tag="4" />
 			</nodes>
 		</line>
 		<line tag="5" bh="2" bk="2" bi="-4" bl="0">
+			<constraints>
+				<plane h="0" k="0" i="0" l="1" />
+			</constraints>
 			<nodes>
 				<node tag="4" />
 				<node tag="5" />

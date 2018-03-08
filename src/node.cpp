@@ -10,13 +10,14 @@ Node::Node( Eigen::Vector3d& coords)
 
 Node::~Node()
 {
-  if (_connectedSegments.size() > 0){
-    printf ( "Error cannot delete Node %h, connected to %i segments",
-             this, _connectedSegments.size() );
-    return;
-  }
+  //  if (_connectedSegments.size() > 0){
+  //  printf ( "Error cannot delete Node %h, connected to %i segments",
+  //           this, _connectedSegments.size() );
+  //  return;
+  // }
 }
 
+/*
 Node* Node::connect(Segment2 *seg)
 {
   _connectedSegments.push_back(seg);
@@ -34,6 +35,7 @@ Node* Node::disconnect(Segment2 *seg)
   printf ( "ERROR: trying to remove unconnected segment. Node = %p, Segment = %p\n", this, seg);
   return NULL;
 }
+*/
 
 Eigen::Vector3d Node::get_coords() const
 {

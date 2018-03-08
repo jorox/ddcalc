@@ -40,9 +40,10 @@ void FaultedHelicalTurn::generate ( double pLength,
   double d = _height / 2.0 / tn;
   printf ("DEBUG: l = %f\n", ltop);
 
+
+  // generate first prismatic segment
   int nMainNodes = 6 + 2 * 6 * period;
   Eigen::Matrix<double, 3, Eigen::Dynamic> x(3, nMainNodes);
-  Eigen::Matrix<double, 3, Eigen::Dynamic> y(3, nMainNodes);
   Eigen::Matrix<double, 3, 1> pbcShift;
   int ix = 0;
 
@@ -59,15 +60,11 @@ void FaultedHelicalTurn::generate ( double pLength,
 
     x.block<3, 6>(0, ix) += pbcShift.replicate(1, 6);
   }
-  Eigen::Vector3d dStackingFault(0.0,5.0,0.0);
-  y = y + dStackingFault.replicate(1, nMainNodes);
 
-  Eigen::Vector3d p,q;
+  Eigen::Vector3d p;
   for (int i = 0; i < x.cols(); ++i){
     p << x.block<3,1>(0,i);
-    q << y.block<3,1>(0,i);
-    _nodeVector1.push_back(Node(p));
-    _nodeVector2.push_back(Node(q));
+    _nodeVector.push_back(Node(p));
   }
 
   Eigen::Matrix<int,4,Eigen::Dynamic> gprism(4,1);
@@ -76,15 +73,15 @@ void FaultedHelicalTurn::generate ( double pLength,
   gbasal << 0,0,0,1;
 
   //push first prismatic across periodic boundary
-  _segVector.push_back(Segment2(&_nodeVector1.back(), &_nodeVector1.front(),
+  _segVector.push_back(Segment2(&_nodeVector.back(), &_nodeVector.front(),
                                 _burgers, gprism));
   for (int i = 0; i < x.cols()-1; ++i){
     if (i%2 == 0){
-      _segVector.push_back(Segment2(&_nodeVector1[i], &_nodeVector1[i+1],
+      _segVector.push_back(Segment2(&_nodeVector[i], &_nodeVector[i+1],
                                     _burgers, gbasal));
     }
     else{
-      _segVector.push_back(Segment2(&_nodeVector1[i], &_nodeVector1[i+1],
+      _segVector.push_back(Segment2(&_nodeVector[i], &_nodeVector[i+1],
                                     _burgers, gprism));
     }
   }
@@ -128,8 +125,8 @@ double FaultedHelicalTurn::get_total_length()
 
 int FaultedHelicalTurn::find_node_tag(Node *targetNode)
 {
-  for (int i = 0; i < _nodeVector1.size(); ++i){
-    if (targetNode == &_nodeVector1[i]) return i;
+  for (int i = 0; i < _nodeVector.size(); ++i){
+    if (targetNode == &_nodeVector[i]) return i;
   }
   return -1;
 }
@@ -140,8 +137,8 @@ void FaultedHelicalTurn::write_to_xml(FILE *pf)
   Eigen::Vector3d xnode;
   fprintf (pf, "<?xml version=\"1.0\" ?>\n" );
   fprintf (pf, "<root>\n\t<nodes>");
-  for (int i = 0; i < _nodeVector1.size(); ++i){
-    xnode = _nodeVector1[i].get_coords();
+  for (int i = 0; i < _nodeVector.size(); ++i){
+    xnode = _nodeVector[i].get_coords();
     fprintf (pf, "\n\t\t<node tag=\"%i\" pinned=\"0\" x=\"%1.8f\" y=\"%1.8f\" z=\"%1.8f\" />",
              i, xnode(0), xnode(1), xnode(2));
   }

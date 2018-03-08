@@ -20,18 +20,14 @@ class FaultedHelicalTurn
   void write_to_xml(FILE * pf);
   int find_node_tag(Node* targetNode);
   std::vector<Segment2> _segVector;
-  std::vector<Node> _nodeVector1;
-  std::vector<Node> _nodeVector2;
+  std::vector<Node> _nodeVector;
 
  private:
   double _angle;
   double _totalLength;
   double _height;
   double _width;
-  Eigen::Vector4i _burgersp;
-  Eigen::Vector4i _burgersb1;
-  Eigen::Vector4i _burgersb2;
-
+  Eigen::Vector3d _burgers;
   double _dx;
 
 };
